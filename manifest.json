@@ -8,5 +8,14 @@
       "default_icon": "assets/icon.png"
     },
 
+    "content_scripts": [
+      {
+        "js": ["content.js"],
+        "matches": [
+          "https://psms-web.azureedge.net/stationpreference/selectpreference"
+        ]
+      }
+    ],
+
     "permissions": ["tabs", "<all_urls>"]
 }

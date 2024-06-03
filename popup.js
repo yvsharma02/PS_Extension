@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById("export_btn").addEventListener('click', exportClick);
     document.getElementById("import_btn").addEventListener('click', importClick);
-
 });
-
 
 async function exportClick() {
 
@@ -58,6 +56,7 @@ async function importClick() {
             // alert("File Read!");
 
            var wb = XLSX.read(x.target.result);
+           wb.forEach()
            save(wb);
         }
         
