@@ -79,6 +79,27 @@ function inject() {
     upbtn  = document.getElementById('extension_moveup')
     dwnbtn = document.getElementById('extension_movedown')
 
+    topbtn.addEventListener("click", function() {
+        var ogindex = index_of_option(cur_selection, selected_element)
+        change_pos(cur_selection, 0)
+        change_current_selected(selected_element.children[ogindex])
+    })
+
+    btmbtn.addEventListener("click", function() {
+        var ogindex = index_of_option(cur_selection, selected_element)
+        change_pos(cur_selection, selected_element.childElementCount - 1)
+        change_current_selected(selected_element.children[ogindex])
+    })
+
+    upbtn.addEventListener("click", function() {
+        var curi = index_of_option(cur_selection, selected_element)
+        change_pos(cur_selection, curi >= 1 ? curi - 1 : curi)
+    })
+    btmbtn.addEventListener("click", function() {
+        var curi = index_of_option(cur_selection, selected_element)
+        change_pos(cur_selection, curi < cur_selection.childElementCount - 1 ? curi + 1 : curi)
+    })
+
     switchtop_btn.addEventListener("click", function() {
 //        console.log("something should happen!")
         console.log(cur_selection)
@@ -95,6 +116,8 @@ function inject() {
             move_from_selected_to_av(cur_selection, available_element.childElementCount)
         }
     })
+
+    upbtn
 
     branch_field = document.getElementById('extension_branches')
     stipend_field = document.getElementById('extension_stipend')
@@ -267,8 +290,8 @@ function fill_list(list, element) {
 
 function change_current_selected(new_option) {
     new_option.click()
-    selected_element.focus()
-    new_option.focus()
+//    selected_element.focus()
+//    new_option.focus()
     selected_element.selectedIndex = index_of_option(new_option, selected_element)
     selected_element.dispatchEvent(new Event('change', {bubbles: true}))
 //    selected_element.selectedIndex = Array.prototype.indexOf.call(selected_element.children, new_option)
@@ -276,7 +299,7 @@ function change_current_selected(new_option) {
 
 function change_current_avaliable(new_option) {
     available_element.selectedIndex = index_of_option(new_option, available_element)
-    available_element.focus()
+//    available_element.focus()
     available_element.dispatchEvent(new Event('change', {bubbles: true}))
     
 //    available_element.selectedIndex = Array.prototype.indexOf.call(available_element.children, new_option)
@@ -291,7 +314,7 @@ function fillListsIfLoaded() {
    available_element.addEventListener("change", function () {
     cur = current_option_of_avaliable()
     cur_selection = cur
-    if (!e) {
+    if (!cur) {
         clearDetails()
         return
     }
@@ -299,9 +322,10 @@ function fillListsIfLoaded() {
    });
     selected_element = document.querySelector("select[formcontrolname='selectedListBox']");
    selected_element.addEventListener("change", function () {
+    
     cur = current_option_of_selected()
     cur_selection = cur
-    if (!e) {
+    if (!cur) {
         clearDetails()
         return
     }
