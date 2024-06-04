@@ -12,6 +12,8 @@ var available_list = new Array()
 var available_element = null
 var selected_element = null
 
+station_proj_map = new Map()
+
 // var available_current = null
 // var selected_current = null
 
@@ -22,8 +24,15 @@ async function load_data() {
         var buffer = this.response;
         console.log("Load complete! Length = ", buffer.byteLength);
         var wb = XLSX.read(buffer);
-
-        /* DATA GETS LOADED HERE */
+        js = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+        for (var i = 0; i < js.length; i++) {
+            var key = js[i]["Station Name"];
+            if(!station_proj_map.has(key)) {
+                station_proj_map.set(key, []);
+            }
+            station_proj_map.get(key).push(js[i])
+        }
+        console.log(station_proj_map)
     }
 
     var oReq = new XMLHttpRequest();
