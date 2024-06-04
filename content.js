@@ -164,11 +164,11 @@ function inject() {
 
     upbtn.addEventListener("click", function() {
         var curi = index_of_option(cur_selection, selected_element)
-        change_pos(cur_selection, curi >= 1 ? curi - 1 : curi)
+        change_pos(cur_selection, curi >= 1 ? curi - 1 : curi, true)
     })
-    btmbtn.addEventListener("click", function() {
+    dwnbtn.addEventListener("click", function() {
         var curi = index_of_option(cur_selection, selected_element)
-        change_pos(cur_selection, curi < cur_selection.childElementCount - 1 ? curi + 1 : curi)
+        change_pos(cur_selection, curi < selected_element.childElementCount - 1 ? curi + 1 : curi, true)
     })
 
     switchtop_btn.addEventListener("click", function() {
@@ -198,6 +198,13 @@ function inject() {
 //    pref_field = document.getElementById('extension_pref')
     proj_field = document.getElementById('extension_projlist')
     desc_field = document.getElementById('extension_desc')
+
+    btmbtn.disabled = true
+    topbtn.disabled = true
+    upbtn.disabled = true
+    dwnbtn.disabled = true
+    switchbtm_btn.disabled = true
+    switchtop_btn.disabled = true
 }
 
 function fill_details(opt, proj_index) {
@@ -240,6 +247,11 @@ function fill_details(opt, proj_index) {
 }
 
 function onSelectionChange(opt) {
+
+    if (opt != null) {
+        switchtop_btn.disabled = false
+    }
+
     var opt_name = get_station_name_from_option(opt)
     proj_field = document.getElementById('extension_projlist')
     
@@ -292,13 +304,12 @@ function current_option_of_selected() {
     return selected_element.children[selected_element.selectedIndex];
 }
 
-function change_pos(element, new_pos) {
+function change_pos(element, new_pos, select_item_at_new_pos) {
     change_current_selected(element)
     cur_pos = get_position_of_option(element)
     
     up_btn = document.getElementsByClassName("dual-action-right")[0].children[0]
     down_btn = document.getElementsByClassName("dual-action-right")[0].children[1]
-
     while (new_pos < cur_pos) {
         cur_pos--;
         up_btn.click()
@@ -306,6 +317,9 @@ function change_pos(element, new_pos) {
     while (cur_pos < new_pos) {
         cur_pos++;
         down_btn.click()
+    }
+    if (select_item_at_new_pos) {
+        change_current_selected(selected_element.children[new_pos])
     }
 }
 
@@ -355,8 +369,8 @@ function fill_list(list, element) {
 
 function change_current_selected(new_option) {
     new_option.click()
-//    selected_element.focus()
-//    new_option.focus()
+//   selected_element.focus()
+//   new_option.focus()
     selected_element.selectedIndex = index_of_option(new_option, selected_element)
     selected_element.dispatchEvent(new Event('change', {bubbles: true}))
 //    selected_element.selectedIndex = Array.prototype.indexOf.call(selected_element.children, new_option)
@@ -364,7 +378,7 @@ function change_current_selected(new_option) {
 
 function change_current_avaliable(new_option) {
     available_element.selectedIndex = index_of_option(new_option, available_element)
-//    available_element.focus()
+//   available_element.focus()
     available_element.dispatchEvent(new Event('change', {bubbles: true}))
     
 //    available_element.selectedIndex = Array.prototype.indexOf.call(available_element.children, new_option)
