@@ -1,66 +1,39 @@
-<style>
-    .extension_outer {
-        width: 100%;
-        margin: auto;
-    }
-    .extension_c1 {
-        align-content: top;
-        width: 25%;
-        font-family: verdana;
-        vertical-align: top;
-        display: inline-block;
-        font-size: 150%;
-    }
-    .extension_c2 {
-        width: auto;
-        font-family: verdana;
-        font-size: 100%;
-        display: inline-block;
-        vertical-align: top;
-    }
-    .extension_c3 {
-        width: auto;
-        font-family: verdana;
-        font-size: 100%;
-        display: inline-block;
-        vertical-align: top;
-    }
-    .vl {
-      border-left: 6px solid green;
-      height: 90px;
-      left: 50%;
-      margin-left: -3px;
-      top: 0;
-      display: inline-block;
-    }
-    </style>
-    
-    <div class="extension_outer">
-    
-        <div class="extension_c1">
-            <div style="text-align: center;">Projects </div>
-        </div>
-        <div class="vl"></div>
-        <div class="extension_c2">
-            <div style="text-align: center;">Stipend</div>
-            <div id="stipend", style="font-size: 75%; text-align: center;"> 1000 INR </div> <br>
-            <div style="text-align: center;">Branches</div>
-            <div id="Branches", style="font-size: 75%; text-align: center;"> A3 A7 A8 </div>
-        </div>
-        <div class="vl"></div>
-        <div class="extension_c3">
-            <button id="btn_top"> > </button> <br> <br>
-            <button id="btn_btm"> > </button> <br>
-        </div>
-        <div class="vl"></div>
-        <div class="extension_c3">
-            <button id="btn_up"> UP </button> <br> <br>
-            <button id="btn_dwn"> DWN </button> <br>
-        </div>
-        <div class="vl"></div>
-        <div class="extension_c3">
-            <input type="text" id="pos"> POSITION </button> <br> <br>
-        </div>
-        <div class="vl"></div>
-    
-    </div>
+<table>
+
+    <tr>
+        <table>
+            <tr>
+                <td> <b> Station: </b> <div id='extension_stationname'> </div> </td>
+                <td> <b> City: </b> <div id='extension_city'> </div> </td>
+                <td> <b> Domain: </b> <div id='extension_domain'> </div> </td>
+                <td> <b> Subdomain: </b> <div id='extension_subdomain'> </div> </td>
+                <td> <b> Prefrence No: </b> <div id='extension_pref'> </div> </td>
+                <td> <button> > </button> <div id='extension_switchtop'> </div> </td>
+                <td> <button> UP </button> <div id='extension_moveup'> </div> </td>
+                <td> <button> TP </button> <div id='extension_movetop'> </div> </td>
+            </tr>
+            <tr>
+                <td> <b> Stipend: </b> <div id='extension_stipend'> </div> </td>
+                <td> <b> Branches: </b> <div id='extension_branches'> </div> </td>
+                <td> <b> Office: </b> <div id='extension_office'> </div> </td>
+                <td> <b> Holidays: </b> <div id='extension_holidays'> </div> </td>
+                <td> <b> Courses: </b> <div id='extension_subdomain'> </div> </td>
+                <td> <button> > </button> <div id='extension_switchdwn'> </div> </td>
+                <td> <button> DN </button> <div id='extension_movedown'> </div> </td>
+                <td> <button> BTM </button> <div id='extension_movebtm'> </div> </td>
+            </tr>
+        </table>
+    </tr>
+    <tr>
+        <td id='extension_projlist'>
+            <b> Projects: </b> <br/>
+            <button> P1 </button> </br>
+            <button> P2 </button> </br>
+            <button> P3 </button>
+        </td>
+        <td>
+            <div id='extension_desc'> </div>
+        </td>
+    </tr>
+
+<table>

@@ -15,6 +15,14 @@ var selected_element = null
 // var available_current = null
 // var selected_current = null
 
+function inject() {
+    e = document.createElement("div")
+    e.innerHTML = "<table> <tr> <table> <tr> <td> <b> Station: </b> <div id='extension_stationname'> </div> </td> <td> <b> City: </b> <div id='extension_city'> </div> </td> <td> <b> Domain: </b> <div id='extension_domain'> </div> </td> <td> <b> Subdomain: </b> <div id='extension_subdomain'> </div> </td> <td> <b> Prefrence No: </b> <div id='extension_pref'> </div> </td> <td> <button> > </button> <div id='extension_switchtop'> </div> </td> <td> <button> UP </button> <div id='extension_moveup'> </div> </td> <td> <button> TP </button> <div id='extension_movetop'> </div> </td> </tr> <tr> <td> <b> Stipend: </b> <div id='extension_stipend'> </div> </td> <td> <b> Branches: </b> <div id='extension_branches'> </div> </td> <td> <b> Office: </b> <div id='extension_office'> </div> </td> <td> <b> Holidays: </b> <div id='extension_holidays'> </div> </td> <td> <b> Courses: </b> <div id='extension_subdomain'> </div> </td> <td> <button> > </button> <div id='extension_switchdwn'> </div> </td> <td> <button> DN </button> <div id='extension_movedown'> </div> </td> <td> <button> BTM </button> <div id='extension_movebtm'> </div> </td> </tr> </table> </tr> <tr> <td id='extension_projlist'> <b> Projects: </b> <br/> <button> P1 </button> </br> <button> P2 </button> </br> <button> P3 </button> </td> <td> <div id='extension_desc'> </div> </td> </tr> <table>"
+//    e.setAttribute("data", "control.html")
+    before = document.getElementsByClassName("page-form")[0]
+    before.parentElement.insertBefore(e, before)
+}
+
 function remove_extra_from_name(s) {
     return s.substring(s.indexOf('. ') + 2, s.lastIndexOf(' - '));
 }
@@ -66,6 +74,12 @@ function move_from_av_to_selected(avaliable_option, pos) {
     change_current_avaliable(avaliable_option)
     document.getElementsByClassName("dual-action")[0].children[1].click()
     change_pos(selected_element.children[selected_element.childElementCount - 1], pos)
+}
+
+function move_from_selected_to_av(selected_op) {
+    change_current_selected(selected_op)
+    document.getElementsByClassName("dual-action")[0].children[2].click()
+//    change_pos(selected_element.children[selected_element.childElementCount - 1], pos)
 }
 
 function fill_list(list, element) {
@@ -125,10 +139,9 @@ function init() {
     timer = setInterval(function() {
         if (fillListsIfLoaded()) {
             clearInterval(timer);
-            
-           move_from_av_to_selected(available_element.children[0], 10)
+        
+            inject();
         }
-    //    move_from_av_to_selected(available_element.children[0])
 
     }, 1000)
 }
