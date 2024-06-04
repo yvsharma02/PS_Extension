@@ -1,13 +1,13 @@
 # PS2 Helper
 
-![Alt text](assets/icon.png)
+![Alt text](assets/icon.png) <br/> <br/>
 DISCLAIMER:
 
 The extension is provided as it is, without any warrenty or libaility. <br/>
-Although all effort has been put in to throughly test the extension, and make sure it is safe and error free, but in any case PLEASE DOUBLE CHECK EVERYTHING. <br/>
-MAKE SURE TO ALWAYS DOUBLE CHECK IF IMPORTS AND EXPORTS ARE CORRECT. <br/>
-MAKE SURE TO DOUBLE CHECK THAT ALL INFO PROVIDED BY THE EXTENSION. <br/>
-I shall not be liable in case someone messes their PS because of using this extension. <br/>
+Although all effort has been put in to throughly test the extension, and make sure it is safe and error free, but in any case **PLEASE DOUBLE CHECK EVERYTHING.** <br/>
+**MAKE SURE TO ALWAYS DOUBLE CHECK IF IMPORTS AND EXPORTS ARE CORRECT.** <br/>
+**MAKE SURE TO DOUBLE CHECK THAT ALL INFO PROVIDED BY THE EXTENSION.** <br/>
+**I shall not be liable in case someone messes their PS because of using this extension.** <br/>
 That being said, if you found any issue, or have any suggesions, feel free to share them with me at f20212645@pilani.bits-pilani.ac.in
 <br/>
 <br/>
