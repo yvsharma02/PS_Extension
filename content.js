@@ -56,16 +56,18 @@ var domain_field = null
 var subdomain_field = null
 var office_field = null
 var holidays_field = null
-var courses_field = null
-var pref_field = null
+//var courses_field = null
+//var pref_field = null
 var proj_field = null
 var desc_field = null
 
 var cur_proj_index = 0
 
+var cur_selection = null
+
 function inject() {
     e = document.createElement("div")
-    e.innerHTML = "<table> <tbody> <tr> <td> <b> Station: </b> <div id='extension_stationname'> None </div> </td> <td> <b> City: </b> <div id='extension_city'> </div> None </td> <td> <b> Domain: </b> <div id='extension_domain'> </div> None </td> <td> <b> Subdomain: </b> <div id='extension_subdomain'> </div> None </td> <td> <b> Prefrence No: </b> <div id='extension_pref'> </div> None </td> <td> <button id='extension_switchtop'> > </button> </td> <td> <button id='extension_moveup'> UP </button>  </td> <td> <button id='extension_movetop'> TP </button>  </td> </tr> <tr> <td> <b> Stipend: </b> <div id='extension_stipend'> </div> None </td> <td> <b> Branches: </b> <div id='extension_branches'> </div> None </td> <td> <b> Office: </b> <div id='extension_office'> </div> None </td> <td> <b> Holidays: </b> <div id='extension_holidays'> </div> None </td> <td> <b> Courses: </b> <div id='extension_courses'> </div> None </td> <td> <button id='extension_switchbtm'> > </button> </td> <td> <button id='extension_movedown'> DN </button> </td> <td> <button id='extension_movebtm'> BTM </button> </td> </tr> </tbody> </table> <div> <div id='extension_projlist'> <b> Projects: </b> <br/> <button> P1 </button> <br/> <button> P2 </button> <br/> <button> P3 </button> <br/> </div> <div id='extension_desc'> None </div> </div>"
+    e.innerHTML = "<table> <tbody> <tr> <td> <h3> Station: <h3> <div id='extension_stationname'> </div> </td> <td> <b> City: </b> <div id='extension_city'> </div> </td> <td> <b> Domain: </b> <div id='extension_domain'> </div> </td> <td> <b> Subdomain: </b> <div id='extension_subdomain'> </div> </td> <td> <b> Prefrence No: </b> <div id='extension_pref'> </div> </td> <td> <button id='extension_switchtop'> > </button> </td> <td> <button id='extension_moveup'> UP </button>  </td> <td> <button id='extension_movetop'> TP </button>  </td> </tr> <tr> <td> <b> Stipend: </b> <div id='extension_stipend'> </div> </td> <td> <b> Branches: </b> <div id='extension_branches'> </div> </td> <td> <b> Office: </b> <div id='extension_office'> </div> </td> <td> <b> Holidays: </b> <div id='extension_holidays'> </div> </td> <td> <b> Courses: </b> <div id='extension_courses'> </div> </td> <td> <button id='extension_switchbtm'> > </button> </td> <td> <button id='extension_movedown'> DN </button> </td> <td> <button id='extension_movebtm'> BTM </button> </td> </tr> </tbody> </table> <div> <div id='extension_projlist'> <b> Projects: </b> <br/> <button> P1 </button> <br/> <button> P2 </button> <br/> <button> P3 </button> <br/> </div> <div id='extension_desc'> None </div> </div>"
     before = document.getElementsByClassName("page-form")[0]
     before.parentElement.insertBefore(e, before)
 
@@ -77,6 +79,23 @@ function inject() {
     upbtn  = document.getElementById('extension_moveup')
     dwnbtn = document.getElementById('extension_movedown')
 
+    switchtop_btn.addEventListener("click", function() {
+//        console.log("something should happen!")
+        console.log(cur_selection)
+        if (index_of_option(cur_selection, available_element) != -1) {
+            move_from_av_to_selected(cur_selection, 0)
+        } else {
+            move_from_selected_to_av(cur_selection, 0)
+        }
+    })
+    switchbtm_btn.addEventListener("click", function() {
+        if (index_of_option(cur_selection, available_element) != -1) {
+            move_from_av_to_selected(cur_selection, selected_element.childElementCount)
+        } else {
+            move_from_selected_to_av(cur_selection, available_element.childElementCount)
+        }
+    })
+
     branch_field = document.getElementById('extension_branches')
     stipend_field = document.getElementById('extension_stipend')
     station_field = document.getElementById('extension_stationname')
@@ -85,8 +104,8 @@ function inject() {
     subdomain_field = document.getElementById('extension_subdomain')
     office_field = document.getElementById('extension_office')
     holidays_field = document.getElementById('extension_holidays')
-    courses_field = document.getElementById('extension_courses')
-    pref_field = document.getElementById('extension_pref')
+//    courses_field = document.getElementById('extension_courses')
+//    pref_field = document.getElementById('extension_pref')
     proj_field = document.getElementById('extension_projlist')
     desc_field = document.getElementById('extension_desc')
 }
@@ -95,7 +114,7 @@ function fill_details(opt, proj_index) {
 //    console.log(opt)
     var on_ava_side = index_of_option(opt, available_element) != -1
     var opt_name = get_station_name_from_option(opt)
-
+//    console.log(on_ava_side)
     // if (proj_index < 0) {
     //     proj_index = 0;
     // }
@@ -107,11 +126,11 @@ function fill_details(opt, proj_index) {
     topbtn.disabled = on_ava_side
     upbtn.disabled = on_ava_side
     dwnbtn.disabled = on_ava_side
-    switchbtm_btn.disabled = on_ava_side
-    pref_field.disabled = on_ava_side
+    switchbtm_btn.disabled = !on_ava_side
+//    pref_field.disabled = on_ava_side
 
-    switchtop_btn.value = on_ava_side ? ">" : "<"
-    switchbtm_btn.value = on_ava_side ? ">" : "<"
+    switchtop_btn.innerHTML = on_ava_side ? ">" : "<"
+    switchbtm_btn.innerHTML = on_ava_side ? ">" : "<"
     
     console.log(proj_index + " vs " + station_proj_map.get(opt_name).length)
 //    console.log(station_proj_map.get(opt_name)[proj_index])
@@ -124,13 +143,13 @@ function fill_details(opt, proj_index) {
     subdomain_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Domain"]
     office_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Office-Start"] + "-" + station_proj_map.get(opt_name)[proj_index]["Office-End"]
     holidays_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Holidays"]
-    courses_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Courses"]
-    pref_field.innerHTML = on_ava_side ? 0 : index_of_option(opt, available_element)
+//    courses_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Courses"]
+//    pref_field.innerHTML = on_ava_side ? 0 : index_of_option(opt, available_element)
     desc_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Project Details"]
 //    proj_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Degree"]
 }
 
-function onSelectionChange(opt, element) {
+function onSelectionChange(opt) {
     var opt_name = get_station_name_from_option(opt)
     proj_field = document.getElementById('extension_projlist')
     
@@ -149,6 +168,7 @@ function onSelectionChange(opt, element) {
         proj_field.appendChild(b)
     })(i);
     }
+    cur_selection = opt
 //    proj_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Degree"]
     fill_details(opt, 0)
 }
@@ -163,6 +183,7 @@ function remove_extra_from_name(s) {
 }
 
 function get_station_name_from_option(option) {
+    console.log(option)
     return remove_extra_from_name(option.innerHTML)
 }
 
@@ -206,9 +227,21 @@ function index_of_option(opt, element) {
 
 
 function move_from_av_to_selected(avaliable_option, pos) {
+    var index = index_of_option(avaliable_option, available_element)
+
     change_current_avaliable(avaliable_option)
     document.getElementsByClassName("dual-action")[0].children[1].click()
     change_pos(selected_element.children[selected_element.childElementCount - 1], pos)
+
+    if (index < available_element.childElementCount) {
+        change_current_avaliable(available_element.children[index])
+    } else {
+        if (available_element.childElementCount == 0) {
+            return
+        } else {
+            change_current_avaliable(available_element.children[available_element.childElementCount - 1])
+        }
+    }
 }
 
 function move_from_selected_to_av(selected_op) {
@@ -249,14 +282,30 @@ function change_current_avaliable(new_option) {
 //    available_element.selectedIndex = Array.prototype.indexOf.call(available_element.children, new_option)
 }
 
+function clearDetails() {
+
+}
+
 function fillListsIfLoaded() {
     available_element = document.querySelector("select[formcontrolname='availableListBox']");
    available_element.addEventListener("change", function () {
-    onSelectionChange(current_option_of_avaliable(), available_element)
+    cur = current_option_of_avaliable()
+    cur_selection = cur
+    if (!e) {
+        clearDetails()
+        return
+    }
+    onSelectionChange(cur, available_element)
    });
     selected_element = document.querySelector("select[formcontrolname='selectedListBox']");
    selected_element.addEventListener("change", function () {
-    onSelectionChange(current_option_of_selected(), selected_element)
+    cur = current_option_of_selected()
+    cur_selection = cur
+    if (!e) {
+        clearDetails()
+        return
+    }
+    onSelectionChange(cur, selected_element)
    });
 
     var total_count = available_element.childElementCount + selected_element.childElementCount;
