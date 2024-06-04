@@ -138,8 +138,7 @@ function onSelectionChange(opt, element) {
         proj_field.removeChild(proj_field.children[1])
     }
 
-
-
+    console.log(opt_name)
     for (var i = 0; i < station_proj_map.get(opt_name).length; i++) {
         (function(i) {
         b = document.createElement('button')
@@ -155,7 +154,12 @@ function onSelectionChange(opt, element) {
 }
 
 function remove_extra_from_name(s) {
-    return s.substring(s.indexOf('. ') + 2, s.lastIndexOf(' - '));
+    res = s.substring(s.indexOf('. ') + 2, s.lastIndexOf(' - '));
+    while (res.indexOf('&amp;') != -1) {
+        res = res.substring(0, res.indexOf('&amp;')) +  '&' + res.substring(res.indexOf('&amp;') + 5)
+    }
+
+    return res
 }
 
 function get_station_name_from_option(option) {
