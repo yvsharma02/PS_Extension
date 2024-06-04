@@ -50,6 +50,7 @@ async function importClick() {
         let files =   Array.from(input.files);
 //        console.log(files[0].);
         var reader = new FileReader();
+        console.log(input.files[0])
         reader.readAsArrayBuffer(input.files[0]);
         reader.onload = function (x) {
             console.log(x.target.result);

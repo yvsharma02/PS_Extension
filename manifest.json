@@ -10,9 +10,18 @@
 
     "content_scripts": [
       {
-        "js": ["content.js"],
+        "js": ["content.js", "public/xlsx.full.min.js"],
         "matches": [
           "https://psms-web.azureedge.net/stationpreference/selectpreference"
+        ]
+      }
+    ],
+
+    "web_accessible_resources": [
+      {
+        "resources": [ "/assets/*" ],
+        "matches": [
+          "https://psms-web.azureedge.net/*"
         ]
       }
     ],

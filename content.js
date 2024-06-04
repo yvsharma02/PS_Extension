@@ -15,12 +15,40 @@ var selected_element = null
 // var available_current = null
 // var selected_current = null
 
+async function load_data() {
+    var path = chrome.runtime.getURL("assets/data.xlsx");
+
+    function reqListener() {
+        var buffer = this.response;
+        console.log("Load complete! Length = ", buffer.byteLength);
+        var wb = XLSX.read(buffer);
+
+        /* DATA GETS LOADED HERE */
+    }
+
+    var oReq = new XMLHttpRequest();
+    oReq.onload = reqListener;
+//    oReq.onerror = reqError;
+    oReq.open("GET", path, true);
+    oReq.responseType = "arraybuffer";
+    oReq.send();
+}
+
+var switchtop_btn = null
+var switchbtm_btn = null
+var btmbtn = null
+var topbtn = null
+var upbtn = null
+var dwnbtn = null
+
 function inject() {
     e = document.createElement("div")
     e.innerHTML = "<table> <tr> <table> <tr> <td> <b> Station: </b> <div id='extension_stationname'> </div> </td> <td> <b> City: </b> <div id='extension_city'> </div> </td> <td> <b> Domain: </b> <div id='extension_domain'> </div> </td> <td> <b> Subdomain: </b> <div id='extension_subdomain'> </div> </td> <td> <b> Prefrence No: </b> <div id='extension_pref'> </div> </td> <td> <button> > </button> <div id='extension_switchtop'> </div> </td> <td> <button> UP </button> <div id='extension_moveup'> </div> </td> <td> <button> TP </button> <div id='extension_movetop'> </div> </td> </tr> <tr> <td> <b> Stipend: </b> <div id='extension_stipend'> </div> </td> <td> <b> Branches: </b> <div id='extension_branches'> </div> </td> <td> <b> Office: </b> <div id='extension_office'> </div> </td> <td> <b> Holidays: </b> <div id='extension_holidays'> </div> </td> <td> <b> Courses: </b> <div id='extension_subdomain'> </div> </td> <td> <button> > </button> <div id='extension_switchdwn'> </div> </td> <td> <button> DN </button> <div id='extension_movedown'> </div> </td> <td> <button> BTM </button> <div id='extension_movebtm'> </div> </td> </tr> </table> </tr> <tr> <td id='extension_projlist'> <b> Projects: </b> <br/> <button> P1 </button> </br> <button> P2 </button> </br> <button> P3 </button> </td> <td> <div id='extension_desc'> </div> </td> </tr> <table>"
-//    e.setAttribute("data", "control.html")
     before = document.getElementsByClassName("page-form")[0]
     before.parentElement.insertBefore(e, before)
+
+    switchtop_btn = e.getElementById('extension_switchtop')
+    switchbtm_btn = e.getElementById('extension_switchbtm')
 }
 
 function remove_extra_from_name(s) {
@@ -135,6 +163,8 @@ function fillListsIfLoaded() {
 function init() {
 
 //    available_element.add
+
+    load_data()
 
     timer = setInterval(function() {
         if (fillListsIfLoaded()) {
