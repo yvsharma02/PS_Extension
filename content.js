@@ -31,7 +31,6 @@ async function load_data() {
             }
             station_proj_map.get(key).push(js[i])
         }
-        console.log(station_proj_map)
     }
 
     var oReq = new XMLHttpRequest();
@@ -113,6 +112,7 @@ function import_exel() {
 
 
 function export_exel() {
+    alert("Please make sure no filters are active during export!")
     export_json = []
 
     for (var i = 0; i < selected_element.length; i++) {
@@ -133,7 +133,7 @@ function export_exel() {
 
 function inject() {
     e = document.createElement("div")
-    e.innerHTML = "<style> </style> <table> <tbody> <tr> <td> <h3> Station: <h3> <div id='extension_stationname'> </div> </td> <td> <b> City: </b> <div id='extension_city'> </div> </td> <td> <b> Domain: </b> <div id='extension_domain'> </div> </td> <td> <b> Subdomain: </b> <div id='extension_subdomain'> </div> </td> <td> <b> Prefrence No: </b> <div id='extension_pref'> </div> </td> <td> <button id='extension_switchtop'> > </button> </td> <td> <button id='extension_moveup'> UP </button>  </td> <td> <button id='extension_movetop'> TP </button>  </td> <td> <button id='extension_export'> EXPORT </button>  </td> </tr> <tr> <td> <b> Stipend: </b> <div id='extension_stipend'> </div> </td> <td> <b> Branches: </b> <div id='extension_branches'> </div> </td> <td> <b> Office: </b> <div id='extension_office'> </div> </td> <td> <b> Holidays: </b> <div id='extension_holidays'> </div> </td> <td> <b> Courses: </b> <div id='extension_courses'> </div> </td> <td> <button id='extension_switchbtm'> > </button> </td> <td> <button id='extension_movedown'> DN </button> </td> <td> <button id='extension_movebtm'> BTM </button> </td> <td> <button id='extension_import'> IMPORT </button>  </td> </tr> </tbody> </table> <div> <div id='extension_projlist'> <b> Projects: </b> <br/> <button> P1 </button> <br/> <button> P2 </button> <br/> <button> P3 </button> <br/> </div> <div id='extension_desc'> None </div> </div>"
+    e.innerHTML = "<style> th, td, table {border: 1px solid;}; th, td {border: 1px solid; padding: 10%}; </style> <table class='fixed', style='width: 100%; '> <col width='17.5%' /> <col width='17.5%' /> <col width='17.5%' /> <col width='17.5%' /> <col width='7.5%' /> <col width='7.5%' /> <col width='7.5%' /> <col width='7.5%' /> <tbody> <tr> <td style='padding-left: 5px; padding-top: 5px;'> <b> Station: </b> <div id='extension_stationname'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> City: </b> <div id='extension_city'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Domain: </b> <div id='extension_domain'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Subdomain: </b> <div id='extension_subdomain'>N/A </div> </td> <td style='justify-content: center; padding:5px'> <button id='extension_switchtop'> INSERT TOP </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_moveup'> UP </button>  </td> <td style='justify-content: center; padding:5px'> <button id='extension_movetop'> TOP </button>  </td> <td style='justify-content: center; padding:5px'> <button id='extension_export'> EXPORT </button>  </td> </tr> <tr> <td style='padding-left: 5px; padding-top: 5px;'> <b> Stipend: </b> <div id='extension_stipend'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Branches: </b> <div id='extension_branches'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Office: </b> <div id='extension_office'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Holidays: </b> <div id='extension_holidays'> N/A </div> </td> <td style='justify-content: center; padding:5px'> <button id='extension_switchbtm'> INSERT BTM </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_movedown'> DOWN </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_movebtm'> BOTTOM </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_import'> IMPORT </button>  </td> </tr> </tbody> </table> <div> <div id='extension_projlist'> <b> Projects: </b> <br/> <!-- <button> P1 </button> <br/> <button> P2 </button> <br/> <button> P3 </button> <br/> --> </div> <div id='extension_desc'> None </div> </div>"
     before = document.getElementsByClassName("page-form")[0]
     before.parentElement.insertBefore(e, before)
 
@@ -172,8 +172,6 @@ function inject() {
     })
 
     switchtop_btn.addEventListener("click", function() {
-//        console.log("something should happen!")
-        console.log(cur_selection)
         if (index_of_option(cur_selection, available_element) != -1) {
             move_from_av_to_selected(cur_selection, 0)
         } else {
@@ -203,16 +201,19 @@ function inject() {
 }
 
 function fill_details(opt, proj_index) {
-//    console.log(opt)
     var on_ava_side = index_of_option(opt, available_element) != -1
     var opt_name = get_station_name_from_option(opt)
-//    console.log(on_ava_side)
+
     // if (proj_index < 0) {
     //     proj_index = 0;
     // }
     // if (proj_index >= station_proj_map.get(opt_name).length) {
     //     proj_index = 0
     // }
+    for (var i = 1; i < document.getElementById('extension_projlist').childElementCount; i++) {
+        document.getElementById('extension_projlist').children[i].disabled = false;
+    }
+    proj_field = document.getElementById('extension_projlist').children[proj_index + 1].disabled = true;
 
     btmbtn.disabled = on_ava_side
     topbtn.disabled = on_ava_side
@@ -221,19 +222,16 @@ function fill_details(opt, proj_index) {
     switchbtm_btn.disabled = !on_ava_side
 //    pref_field.disabled = on_ava_side
 
-    switchtop_btn.innerHTML = on_ava_side ? ">" : "<"
-    switchbtm_btn.innerHTML = on_ava_side ? ">" : "<"
+    switchtop_btn.innerHTML = on_ava_side ? "INSERT TOP" : "REMOVE"
+    switchbtm_btn.innerHTML = on_ava_side ? "INSERT BTM" : "REMOVE"
     
-    console.log(proj_index + " vs " + station_proj_map.get(opt_name).length)
-//    console.log(station_proj_map.get(opt_name)[proj_index])
-
     branch_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Degree"]
     stipend_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Stipend"]
     station_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Station Name"]
     city_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["City"]
     domain_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Domain"]
     subdomain_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Domain"]
-    office_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Office-Start"] + "-" + station_proj_map.get(opt_name)[proj_index]["Office-End"]
+    office_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Office-Start-Time"] + "-" + station_proj_map.get(opt_name)[proj_index]["Office-End-Time"].substring(1)
     holidays_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Holidays"]
 //    courses_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Courses"]
 //    pref_field.innerHTML = on_ava_side ? 0 : index_of_option(opt, available_element)
@@ -249,7 +247,10 @@ function onSelectionChange(opt) {
         proj_field.removeChild(proj_field.children[1])
     }
 
-    console.log(opt_name)
+    if (!station_proj_map.get(opt_name) || station_proj_map.get(opt_name).length == 0) {
+        alert("Warning: The station " + opt_name + " seems to be missing details. It might be newely added and not yet scraped. Please contact admin")
+    }
+
     for (var i = 0; i < station_proj_map.get(opt_name).length; i++) {
         (function(i) {
         b = document.createElement('button')
@@ -275,7 +276,6 @@ function remove_extra_from_name(s) {
 }
 
 function get_station_name_from_option(option) {
-    console.log(option)
     return remove_extra_from_name(option.innerHTML)
 }
 
@@ -298,10 +298,6 @@ function change_pos(element, new_pos) {
     
     up_btn = document.getElementsByClassName("dual-action-right")[0].children[0]
     down_btn = document.getElementsByClassName("dual-action-right")[0].children[1]
-
-    console.log(up_btn)
-    console.log(new_pos)
-    console.log(cur_pos)
 
     while (new_pos < cur_pos) {
         cur_pos--;
