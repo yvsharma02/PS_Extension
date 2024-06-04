@@ -1,7 +1,7 @@
 {
-    "name": "PS Extension",
-    "description": "Export PS Preferences",
-    "version": "0.1",
+    "name": "BITS PS2 Helper",
+    "description": "Sort, Explore and Share PS2 Preferences with ease!",
+    "version": "1",
     "manifest_version": 3,
     "action": {
       "default_popup": "popup.html",
@@ -12,7 +12,7 @@
       {
         "js": ["content.js", "public/xlsx.full.min.js"],
         "matches": [
-          "https://psms-web.azureedge.net/stationpreference/selectpreference"
+          "https://psms-web.azureedge.net/*"
         ]
       }
     ],
@@ -24,7 +24,5 @@
           "https://psms-web.azureedge.net/*"
         ]
       }
-    ],
-
-    "permissions": ["tabs", "<all_urls>"]
+    ]
 }
