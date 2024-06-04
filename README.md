@@ -17,7 +17,7 @@ WHY USE THIS EXTENSION: <br/>
 3) The extension also allows you to save and load your preferences as an exel sheet. This way, you can share it with your friends, and also have a backup in case PSMS decides to not save your preferences, like it sometimes likes to do.
 
 <br/>
-<img src="https://imgur.com/a/jlmZUQz" width="1024" height="416" />
+<img src="https://i.imgur.com/Y8sYBaz.png" width="1024" height="416" />
 <br/>
 
 HOW TO INSTALL/ENABLE: <br/>
