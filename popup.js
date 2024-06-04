@@ -35,7 +35,6 @@ async function exportClick() {
   
     /* create an XLSX file and try to save to Presidents.xlsx */
     XLSX.writeFile(workbook, "Presidents.xlsx", { compression: true });
-
 }
 
 function save(wb) {

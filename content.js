@@ -61,13 +61,79 @@ var holidays_field = null
 var proj_field = null
 var desc_field = null
 
+var export_btn = null
+var import_btn = null
+
 var cur_proj_index = 0
 
 var cur_selection = null
 
+function extract_station_id_from_option(option) {
+    str = option.getAttribute("value")
+    return str.substring(str.indexOf("'") + 1, str.length - 1)
+}
+
+function import_exel() {
+    alert("Note: This may take a while! You'll now need to select the input file. Another Alert alert appear when the process is complete. DO NOT MODIFY PAGE CONTENT TILL THEN")
+
+    
+
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = _ => {
+        // Reset everything initially.    
+        document.getElementsByClassName("dual-action")[0].children[3].click()
+        let files =   Array.from(input.files);
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(input.files[0]);
+        reader.onload = function (x) {
+            var wb = XLSX.read(x.target.result);
+
+            js = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+            for (var i = 0; i < js.length; i++) {
+                var id = js[i]["STATION_ID"];
+
+                for (var k = 0; k < available_element.childElementCount; k++) {
+                    if (extract_station_id_from_option(available_element.children[k]) == id) {
+                        move_from_av_to_selected(available_element.children[k], selected_element.childElementCount)
+                        break;
+                    }
+                }
+                // if(!station_proj_map.has(key)) {
+                //     station_proj_map.set(key, []);
+                // }
+                // station_proj_map.get(key).push(js[i])
+            }
+            alert("Imprort Finished!")
+        }
+    }
+    input.click()
+
+}
+
+
+function export_exel() {
+    export_json = []
+
+    for (var i = 0; i < selected_element.length; i++) {
+        var name = remove_extra_from_name(selected_element.children[i].innerHTML)
+        json_obj = {"STATION_ID": extract_station_id_from_option(selected_element.children[i]),
+                    "STATION_NAME": name,
+                    "STIPEND": station_proj_map.get(name)[0]["Stipend"],
+                    "DEGREE": station_proj_map.get(name)[0]["Degree"],
+                    "CITY": station_proj_map.get(name)[0]["City"]
+        }
+        export_json.push(json_obj)
+    }
+    const worksheet = XLSX.utils.json_to_sheet(export_json);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "PREFERENCE");
+    XLSX.writeFile(workbook, "PS2_Preference.xlsx", { compression: true });
+}
+
 function inject() {
     e = document.createElement("div")
-    e.innerHTML = "<table> <tbody> <tr> <td> <h3> Station: <h3> <div id='extension_stationname'> </div> </td> <td> <b> City: </b> <div id='extension_city'> </div> </td> <td> <b> Domain: </b> <div id='extension_domain'> </div> </td> <td> <b> Subdomain: </b> <div id='extension_subdomain'> </div> </td> <td> <b> Prefrence No: </b> <div id='extension_pref'> </div> </td> <td> <button id='extension_switchtop'> > </button> </td> <td> <button id='extension_moveup'> UP </button>  </td> <td> <button id='extension_movetop'> TP </button>  </td> </tr> <tr> <td> <b> Stipend: </b> <div id='extension_stipend'> </div> </td> <td> <b> Branches: </b> <div id='extension_branches'> </div> </td> <td> <b> Office: </b> <div id='extension_office'> </div> </td> <td> <b> Holidays: </b> <div id='extension_holidays'> </div> </td> <td> <b> Courses: </b> <div id='extension_courses'> </div> </td> <td> <button id='extension_switchbtm'> > </button> </td> <td> <button id='extension_movedown'> DN </button> </td> <td> <button id='extension_movebtm'> BTM </button> </td> </tr> </tbody> </table> <div> <div id='extension_projlist'> <b> Projects: </b> <br/> <button> P1 </button> <br/> <button> P2 </button> <br/> <button> P3 </button> <br/> </div> <div id='extension_desc'> None </div> </div>"
+    e.innerHTML = "<style> </style> <table> <tbody> <tr> <td> <h3> Station: <h3> <div id='extension_stationname'> </div> </td> <td> <b> City: </b> <div id='extension_city'> </div> </td> <td> <b> Domain: </b> <div id='extension_domain'> </div> </td> <td> <b> Subdomain: </b> <div id='extension_subdomain'> </div> </td> <td> <b> Prefrence No: </b> <div id='extension_pref'> </div> </td> <td> <button id='extension_switchtop'> > </button> </td> <td> <button id='extension_moveup'> UP </button>  </td> <td> <button id='extension_movetop'> TP </button>  </td> <td> <button id='extension_export'> EXPORT </button>  </td> </tr> <tr> <td> <b> Stipend: </b> <div id='extension_stipend'> </div> </td> <td> <b> Branches: </b> <div id='extension_branches'> </div> </td> <td> <b> Office: </b> <div id='extension_office'> </div> </td> <td> <b> Holidays: </b> <div id='extension_holidays'> </div> </td> <td> <b> Courses: </b> <div id='extension_courses'> </div> </td> <td> <button id='extension_switchbtm'> > </button> </td> <td> <button id='extension_movedown'> DN </button> </td> <td> <button id='extension_movebtm'> BTM </button> </td> <td> <button id='extension_import'> IMPORT </button>  </td> </tr> </tbody> </table> <div> <div id='extension_projlist'> <b> Projects: </b> <br/> <button> P1 </button> <br/> <button> P2 </button> <br/> <button> P3 </button> <br/> </div> <div id='extension_desc'> None </div> </div>"
     before = document.getElementsByClassName("page-form")[0]
     before.parentElement.insertBefore(e, before)
 
@@ -78,6 +144,11 @@ function inject() {
     topbtn = document.getElementById('extension_movetop')
     upbtn  = document.getElementById('extension_moveup')
     dwnbtn = document.getElementById('extension_movedown')
+    export_btn = document.getElementById('extension_export')
+    import_btn = document.getElementById('extension_import')
+
+    export_btn.addEventListener("click", export_exel)
+    import_btn.addEventListener("click", import_exel)
 
     topbtn.addEventListener("click", function() {
         var ogindex = index_of_option(cur_selection, selected_element)
@@ -116,8 +187,6 @@ function inject() {
             move_from_selected_to_av(cur_selection, available_element.childElementCount)
         }
     })
-
-    upbtn
 
     branch_field = document.getElementById('extension_branches')
     stipend_field = document.getElementById('extension_stipend')
