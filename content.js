@@ -1,3 +1,4 @@
+const DATA_URL = "https://yashvardhan.pythonanywhere.com/data"
 var station_id_map = new Map()
 var id_station_map = new Map()
 
@@ -9,27 +10,31 @@ var selected_element = null
 
 var station_proj_map = new Map()
 
-async function load_data() {
-    var path = chrome.runtime.getURL("assets/data.xlsx");
-
-    function reqListener() {
-        var buffer = this.response;
-        var wb = XLSX.read(buffer);
-        js = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
-        for (var i = 0; i < js.length; i++) {
-            var key = js[i]["Station Name"];
-            if(!station_proj_map.has(key)) {
-                station_proj_map.set(key, []);
-            }
-            station_proj_map.get(key).push(js[i])
+function populate_projects(proj_list) {
+    for (var i = 0; i < proj_list.length; i++) {
+        var key = proj_list[i]["Station Name"];
+        if(!station_proj_map.has(key)) {
+            station_proj_map.set(key, []);
         }
+        station_proj_map.get(key).push(proj_list[i])
     }
+}
 
-    var oReq = new XMLHttpRequest();
-    oReq.onload = reqListener;
-    oReq.open("GET", path, true);
-    oReq.responseType = "arraybuffer";
-    oReq.send();
+async function load_data() {
+    // var path = chrome.runtime.getURL("assets/data.xlsx");
+
+    // function reqListener() {
+    //     var buffer = this.response;
+    //     var wb = XLSX.read(buffer);
+    //     js = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+
+    // }
+
+    const response = await fetch(DATA_URL);
+    const data = await response.json();
+    console.log(data);
+    populate_projects(data)
+    
 }
 
 var switchtop_btn = null
