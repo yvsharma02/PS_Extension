@@ -67,6 +67,10 @@ var cur_proj_index = 0
 
 var cur_selection = null
 
+var MAX_STATES = 50
+var cs = 0
+var states = []
+
 function extract_station_id_from_option(option) {
     str = option.getAttribute("value")
     return str.substring(str.indexOf("'") + 1, str.length - 1)
@@ -74,8 +78,6 @@ function extract_station_id_from_option(option) {
 
 function import_exel() {
     alert("Note: This may take a while! You'll now need to select the input file. Another Alert alert appear when the process is complete. DO NOT MODIFY PAGE CONTENT TILL THEN")
-
-    
 
     let input = document.createElement('input');
     input.type = 'file';
@@ -185,6 +187,10 @@ function inject() {
             move_from_selected_to_av(cur_selection, available_element.childElementCount)
         }
     })
+
+    
+    document.getElementsByClassName("dual-action")[0].children[0].disabled = true
+    document.getElementsByClassName("dual-action")[0].children[3].disabled = true
 
     branch_field = document.getElementById('extension_branches')
     stipend_field = document.getElementById('extension_stipend')

@@ -27,7 +27,9 @@ While we wait for the extension to get approved on the Chrome Store, the only wa
 2) Extract the ZIP somewhere <br/>
 3) Goto chrome://extensions, and make enable Developer mode. <br/>
 4) Click on 'Load unpacked' and point to the extracted folder. <br/>
-5) Goto https://psms-web.azureedge.net/stationpreference/selectpreference AND REFRESH THE PAGE ONCE. <br/>
+5) Goto https://psms-web.azureedge.net/stationpreference/selectpreference AND REFRESH THE PAGE ONCE.
+6) Until the extension is uplodaded on Chrome Store, you need to remove the old extension and repeat the steps to update it.
+<br/>
 
 HOW IT WORKS: <br/>
 The data needs to be pre-dumped in an excel file for this extension to work. For that I made a web-scraper. You can check that out here: <br/>
