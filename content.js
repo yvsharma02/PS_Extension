@@ -103,7 +103,7 @@ function import_exel() {
                 // }
                 // station_proj_map.get(key).push(js[i])
             }
-            alert("Imprort Finished!")
+            alert("Import Finished!")
         }
     }
     input.click()
@@ -112,16 +112,15 @@ function import_exel() {
 
 
 function export_exel() {
-    alert("Please make sure no filters are active during export!")
     export_json = []
 
     for (var i = 0; i < selected_element.length; i++) {
         var name = remove_extra_from_name(selected_element.children[i].innerHTML)
         json_obj = {"STATION_ID": extract_station_id_from_option(selected_element.children[i]),
                     "STATION_NAME": name,
-                    "STIPEND": station_proj_map.get(name)[0]["Stipend"],
-                    "DEGREE": station_proj_map.get(name)[0]["Degree"],
-                    "CITY": station_proj_map.get(name)[0]["City"]
+                    "STIPEND": station_proj_map.has(name) ? station_proj_map.get(name)[0]["Stipend"] : "N/A",
+                    "DEGREE": station_proj_map.has(name) ? station_proj_map.get(name)[0]["Degree"] : "N/A",
+                    "CITY": station_proj_map.has(name) ? station_proj_map.get(name)[0]["City"] : "N/A"
         }
         export_json.push(json_obj)
     }
@@ -129,6 +128,7 @@ function export_exel() {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "PREFERENCE");
     XLSX.writeFile(workbook, "PS2_Preference.xlsx", { compression: true });
+    alert("Export successful. If you find any item(s) missing, make sure no filters were active during export.")
 }
 
 function inject() {
@@ -217,10 +217,6 @@ function fill_details(opt, proj_index) {
     // if (proj_index >= station_proj_map.get(opt_name).length) {
     //     proj_index = 0
     // }
-    for (var i = 1; i < document.getElementById('extension_projlist').childElementCount; i++) {
-        document.getElementById('extension_projlist').children[i].disabled = false;
-    }
-    proj_field = document.getElementById('extension_projlist').children[proj_index + 1].disabled = true;
 
     btmbtn.disabled = on_ava_side
     topbtn.disabled = on_ava_side
@@ -232,18 +228,41 @@ function fill_details(opt, proj_index) {
     switchtop_btn.innerHTML = on_ava_side ? "INSERT TOP" : "REMOVE"
     switchbtm_btn.innerHTML = on_ava_side ? "INSERT BTM" : "REMOVE"
     
-    branch_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Degree"]
-    stipend_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Stipend"]
-    station_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Station Name"]
-    city_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["City"]
-    domain_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Domain"]
-    subdomain_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Domain"]
-    office_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Office-Start-Time"] + "-" + station_proj_map.get(opt_name)[proj_index]["Office-End-Time"].substring(1)
-    holidays_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Holidays"]
-//    courses_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Courses"]
-//    pref_field.innerHTML = on_ava_side ? 0 : index_of_option(opt, available_element)
-    desc_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Project Details"]
-//    proj_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Degree"]
+    if (station_proj_map.has(opt_name)) {
+        if (station_proj_map.get(opt_name).length > 0) {
+            for (var i = 1; i < document.getElementById('extension_projlist').childElementCount; i++) {
+                document.getElementById('extension_projlist').children[i].disabled = false;
+            }
+        }
+        proj_field = document.getElementById('extension_projlist').children[proj_index + 1].disabled = true;
+
+        branch_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Degree"]
+        stipend_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Stipend"]
+        station_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Station Name"]
+        city_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["City"]
+        domain_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Domain"]
+        subdomain_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Domain"]
+        office_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Office-Start-Time"] + "-" + station_proj_map.get(opt_name)[proj_index]["Office-End-Time"].substring(1)
+        holidays_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Holidays"]
+    //    courses_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Courses"]
+    //    pref_field.innerHTML = on_ava_side ? 0 : index_of_option(opt, available_element)
+        desc_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Project Details"]
+    //    proj_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Degree"]
+    } else {
+
+    }
+}
+
+function resetFields() {
+    branch_field.innerHTML = "N/A"
+    stipend_field.innerHTML = "N/A"
+    station_field.innerHTML = "N/A"
+    city_field.innerHTML = "N/A"
+    domain_field.innerHTML = "N/A"
+    subdomain_field.innerHTML = "N/A"
+    office_field.innerHTML = "N/A"
+    holidays_field.innerHTML = "N/A"
+    desc_field.innerHTML = "N/A"
 }
 
 function onSelectionChange(opt) {
@@ -258,21 +277,22 @@ function onSelectionChange(opt) {
     while (proj_field.childElementCount > 1) {
         proj_field.removeChild(proj_field.children[1])
     }
-
     if (!station_proj_map.get(opt_name) || station_proj_map.get(opt_name).length == 0) {
-        alert("Warning: The station " + opt_name + " seems to be missing details. It might be newely added and not yet scraped. Please contact admin")
+        //alert("Warning: The station " + opt_name + " seems to be missing details. It might be newely added and not yet scraped. Please contact admin")
+        resetFields();
+    } else {
+        for (var i = 0; i < station_proj_map.get(opt_name).length; i++) {
+            (function(i) {
+            b = document.createElement('button')
+            b.innerHTML = station_proj_map.get(opt_name)[i]['Title']
+            b.addEventListener('click', function() {
+                fill_details(opt, i)
+            })
+            proj_field.appendChild(b)
+        })(i);
+        }
     }
 
-    for (var i = 0; i < station_proj_map.get(opt_name).length; i++) {
-        (function(i) {
-        b = document.createElement('button')
-        b.innerHTML = station_proj_map.get(opt_name)[i]['Title']
-        b.addEventListener('click', function() {
-            fill_details(opt, i)
-        })
-        proj_field.appendChild(b)
-    })(i);
-    }
     cur_selection = opt
 //    proj_field.innerHTML = station_proj_map.get(opt_name)[proj_index]["Degree"]
     fill_details(opt, 0)
