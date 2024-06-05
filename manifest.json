@@ -15,14 +15,5 @@
           "https://psms-web.azureedge.net/*"
         ]
       }
-    ],
-
-    "web_accessible_resources": [
-      {
-        "resources": [ "/assets/*" ],
-        "matches": [
-          "https://psms-web.azureedge.net/*"
-        ]
-      }
     ]
 }

@@ -21,20 +21,10 @@ function populate_projects(proj_list) {
 }
 
 async function load_data() {
-    // var path = chrome.runtime.getURL("assets/data.xlsx");
-
-    // function reqListener() {
-    //     var buffer = this.response;
-    //     var wb = XLSX.read(buffer);
-    //     js = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
-
-    // }
-
     const response = await fetch(DATA_URL);
     const data = await response.json();
     console.log(data);
     populate_projects(data)
-    
 }
 
 var switchtop_btn = null
