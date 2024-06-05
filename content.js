@@ -1,8 +1,3 @@
-/*
-    Called everything when the order of the list of selected items change.
-    Inefficent, but easy to progam.
-*/
-/* These contains the name of the stations without the extra index and city*/
 var station_id_map = new Map()
 var id_station_map = new Map()
 
@@ -13,9 +8,6 @@ var available_element = null
 var selected_element = null
 
 var station_proj_map = new Map()
-
-// var available_current = null
-// var selected_current = null
 
 async function load_data() {
     var path = chrome.runtime.getURL("assets/data.xlsx");
@@ -91,20 +83,7 @@ function import_exel() {
             var wb = XLSX.read(x.target.result);
 
             js = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
-            for (var i = 0; i < js.length; i++) {
-                var id = js[i]["STATION_ID"];
-
-                for (var k = 0; k < available_element.childElementCount; k++) {
-                    if (extract_station_id_from_option(available_element.children[k]) == id) {
-                        move_from_av_to_selected(available_element.children[k], selected_element.childElementCount)
-                        break;
-                    }
-                }
-                // if(!station_proj_map.has(key)) {
-                //     station_proj_map.set(key, []);
-                // }
-                // station_proj_map.get(key).push(js[i])
-            }
+            from_json_list(js)
             alert("Import Finished!")
         }
     }
@@ -112,10 +91,25 @@ function import_exel() {
 
 }
 
+function from_json_list(js) {
+    for (var i = 0; i < js.length; i++) {
+        var id = js[i]["STATION_ID"];
 
-function export_exel() {
+        for (var k = 0; k < available_element.childElementCount; k++) {
+            if (extract_station_id_from_option(available_element.children[k]) == id) {
+                move_from_av_to_selected(available_element.children[k], selected_element.childElementCount)
+                break;
+            }
+        }
+        // if(!station_proj_map.has(key)) {
+        //     station_proj_map.set(key, []);
+        // }
+        // station_proj_map.get(key).push(js[i])
+    }
+}
+
+function to_json_list() {
     export_json = []
-
     for (var i = 0; i < selected_element.length; i++) {
         var name = remove_extra_from_name(selected_element.children[i].innerHTML)
         json_obj = {"STATION_ID": extract_station_id_from_option(selected_element.children[i]),
@@ -126,6 +120,12 @@ function export_exel() {
         }
         export_json.push(json_obj)
     }
+    return export_json
+}
+
+function export_exel() {
+    export_json = to_json_list()
+
     const worksheet = XLSX.utils.json_to_sheet(export_json);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "PREFERENCE");
@@ -193,6 +193,8 @@ function inject() {
             console.log('The ' + mutation.attributeName + ' attribute was modified.');
         }
     });
+    config = {childList: true, subtree: true, attributes: true}
+    observer.observe(selected_element, config);
     
     // document.getElementsByClassName("dual-action")[0].children[0].disabled = true
     // document.getElementsByClassName("dual-action")[0].children[3].disabled = true
@@ -421,7 +423,10 @@ function clearDetails() {
 
 function fillListsIfLoaded() {
     available_element = document.querySelector("select[formcontrolname='availableListBox']");
-   available_element.addEventListener("change", function () {
+    if (!available_element) {
+        return false;
+    }
+    available_element.addEventListener("change", function () {
     cur = current_option_of_avaliable()
     cur_selection = cur
     if (!cur) {
@@ -431,7 +436,7 @@ function fillListsIfLoaded() {
     onSelectionChange(cur, available_element)
    });
     selected_element = document.querySelector("select[formcontrolname='selectedListBox']");
-   selected_element.addEventListener("change", function () {
+    selected_element.addEventListener("change", function () {
     
     cur = current_option_of_selected()
     cur_selection = cur
@@ -468,10 +473,6 @@ function init() {
         }
 
     }, 1000)
-}
-
-async function onListReorder() {
-
 }
 
 if(document.readyState === 'loading') {
