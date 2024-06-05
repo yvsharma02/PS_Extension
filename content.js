@@ -47,6 +47,8 @@ var domain_field = null
 var subdomain_field = null
 var office_field = null
 var holidays_field = null
+var undo_btn = null
+var redo_btn = null
 //var courses_field = null
 //var pref_field = null
 var proj_field = null
@@ -63,6 +65,49 @@ var MAX_STATES = 50
 var cs = 0
 var states = []
 
+var observer = new MutationObserver(function(mutationsList, observer) { check_state() });
+const observer_config = {childList: true, subtree: true, attributes: true}
+
+function check_state() {
+    
+    identical = true;
+    new_state = to_json_list(false)
+    if (cs == 0) {
+        identical = false;
+    } else {
+        if (new_state.length != states[cs - 1].length) {
+            identical = false;
+        } else {
+            for (var i = 0; i < new_state.length; i++) {
+                if (!(new_state[i]["STATION_ID"] === states[cs - 1][i]["STATION_ID"])) {
+                    identical = false;
+                    break;
+                }
+            }
+        }
+    }
+    if (!identical) {
+       console.log("New State!");
+        if (cs != states.length) {
+            states.splice(cs, states.length - cs)
+        }
+        states.push(new_state)
+        if (cs == MAX_STATES) {
+            states.splice(0, 1)
+        } else {
+            cs++
+        }
+        set_undo_redo_button_state()
+        console.log(cs)
+    }
+    // for (var mutation of mutationsList){
+    //     if (mutation.target != null) {
+    //         console.log('The ' + mutation.target.innerHTML + ' attribute was modified.');
+    //     }
+    // }
+
+}
+
 function extract_station_id_from_option(option) {
     str = option.getAttribute("value")
     return str.substring(str.indexOf("'") + 1, str.length - 1)
@@ -74,8 +119,6 @@ function import_exel() {
     let input = document.createElement('input');
     input.type = 'file';
     input.onchange = _ => {
-        // Reset everything initially.    
-        document.getElementsByClassName("dual-action")[0].children[3].click()
         let files =   Array.from(input.files);
         var reader = new FileReader();
         reader.readAsArrayBuffer(input.files[0]);
@@ -83,7 +126,7 @@ function import_exel() {
             var wb = XLSX.read(x.target.result);
 
             js = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
-            from_json_list(js)
+            from_json_list(js, true)
             alert("Import Finished!")
         }
     }
@@ -91,7 +134,11 @@ function import_exel() {
 
 }
 
-function from_json_list(js) {
+function from_json_list(js, monitor_state = false) {
+    console.log(js)
+    observer.disconnect()
+    // Reset everything initially.    
+    document.getElementsByClassName("dual-action")[0].children[3].click()
     for (var i = 0; i < js.length; i++) {
         var id = js[i]["STATION_ID"];
 
@@ -106,17 +153,25 @@ function from_json_list(js) {
         // }
         // station_proj_map.get(key).push(js[i])
     }
+    observer.observe(selected_element, observer_config)
+    if (monitor_state) {
+        check_state()
+    }
 }
 
-function to_json_list() {
+function to_json_list(extra_details = true) {
     export_json = []
     for (var i = 0; i < selected_element.length; i++) {
         var name = remove_extra_from_name(selected_element.children[i].innerHTML)
-        json_obj = {"STATION_ID": extract_station_id_from_option(selected_element.children[i]),
-                    "STATION_NAME": name,
-                    "STIPEND": station_proj_map.has(name) ? station_proj_map.get(name)[0]["Stipend"] : "N/A",
-                    "DEGREE": station_proj_map.has(name) ? station_proj_map.get(name)[0]["Degree"] : "N/A",
-                    "CITY": station_proj_map.has(name) ? station_proj_map.get(name)[0]["City"] : "N/A"
+        if (extra_details) {
+            json_obj = {"STATION_ID": extract_station_id_from_option(selected_element.children[i]),
+                        "STATION_NAME": name,
+                        "STIPEND": station_proj_map.has(name) ? station_proj_map.get(name)[0]["Stipend"] : "N/A",
+                        "DEGREE": station_proj_map.has(name) ? station_proj_map.get(name)[0]["Degree"] : "N/A",
+                        "CITY": station_proj_map.has(name) ? station_proj_map.get(name)[0]["City"] : "N/A"
+                }
+        } else {
+            json_obj = {"STATION_ID": extract_station_id_from_option(selected_element.children[i])}
         }
         export_json.push(json_obj)
     }
@@ -133,9 +188,39 @@ function export_exel() {
     alert("Export successful. If you find any item(s) missing, make sure no filters were active during export.")
 }
 
+function set_undo_redo_button_state() {
+    undo_btn.disabled = false;
+    redo_btn.disabled = false;
+
+    if (cs < 2) {
+        undo_btn.disabled = true;
+    }
+    if (states.length == 0 || cs >= states.length) {
+        redo_btn.disabled = true;
+    }
+}
+
+function undo() {
+    from_json_list(states[cs - 2], false)
+    cs -= 1;
+    set_undo_redo_button_state()
+    alert("Undo Complete!")
+    // todo: clear selection
+    console.log(cs)
+    console.log(states)
+}
+
+function redo() {
+    from_json_list(states[cs], false)
+    cs += 1;
+    set_undo_redo_button_state()
+    alert("Redo Complete!")
+    // todo: clear selection
+}
+
 function inject() {
     e = document.createElement("div")
-    e.innerHTML = "<style> th, td, table {border: 1px solid;}; th, td {border: 1px solid; padding: 10%}; </style> <table class='fixed', style='width: 100%; '> <col width='17.5%' /> <col width='17.5%' /> <col width='17.5%' /> <col width='17.5%' /> <col width='7.5%' /> <col width='7.5%' /> <col width='7.5%' /> <col width='7.5%' /> <tbody> <tr> <td style='padding-left: 5px; padding-top: 5px;'> <b> Station: </b> <div id='extension_stationname'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> City: </b> <div id='extension_city'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Domain: </b> <div id='extension_domain'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Subdomain: </b> <div id='extension_subdomain'>N/A </div> </td> <td style='justify-content: center; padding:5px'> <button id='extension_switchtop'> INSERT TOP </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_moveup'> UP </button>  </td> <td style='justify-content: center; padding:5px'> <button id='extension_movetop'> TOP </button>  </td> <td style='justify-content: center; padding:5px'> <button id='extension_export'> EXPORT </button>  </td> </tr> <tr> <td style='padding-left: 5px; padding-top: 5px;'> <b> Stipend: </b> <div id='extension_stipend'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Branches: </b> <div id='extension_branches'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Office: </b> <div id='extension_office'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Holidays: </b> <div id='extension_holidays'> N/A </div> </td> <td style='justify-content: center; padding:5px'> <button id='extension_switchbtm'> INSERT BTM </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_movedown'> DOWN </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_movebtm'> BOTTOM </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_import'> IMPORT </button>  </td> </tr> </tbody> </table> <div> <div id='extension_projlist'> <b> Projects: </b> <br/> <!-- <button> P1 </button> <br/> <button> P2 </button> <br/> <button> P3 </button> <br/> --> </div> <div id='extension_desc'> None </div> </div>"
+    e.innerHTML = "<style> th, td, table { border: 1px solid; } ; th, td { border: 1px solid; padding: 10% } ; </style> <table class='fixed' , style='width: 100%; '> <col width='17.5%' /> <col width='17.5%' /> <col width='17.5%' /> <col width='17.5%' /> <col width='7.5%' /> <col width='7.5%' /> <col width='7.5%' /> <col width='7.5%' /> <col width='7.5%' /> <col width='7.5%' /> <tbody> <tr> <td style='padding-left: 5px; padding-top: 5px;'> <b> Station: </b> <div id='extension_stationname'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> City: </b> <div id='extension_city'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Domain: </b> <div id='extension_domain'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Subdomain: </b> <div id='extension_subdomain'>N/A </div> </td> <td style='justify-content: center; padding:5px'> <button id='extension_switchtop'> INSERT TOP </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_moveup'> UP </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_movetop'> TOP </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_export'> EXPORT </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_undo'> UNDO </button> </td> </tr> <tr> <td style='padding-left: 5px; padding-top: 5px;'> <b> Stipend: </b> <div id='extension_stipend'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Branches: </b> <div id='extension_branches'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Office: </b> <div id='extension_office'> N/A </div> </td> <td style='padding-left: 5px; padding-top: 5px;'> <b> Holidays: </b> <div id='extension_holidays'> N/A </div> </td> <td style='justify-content: center; padding:5px'> <button id='extension_switchbtm'> INSERT BTM </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_movedown'> DOWN </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_movebtm'> BOTTOM </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_import'> IMPORT </button> </td> <td style='justify-content: center; padding:5px'> <button id='extension_redo'> REDO </button> </td> </tr> </tbody> </table> <div> <div id='extension_projlist'> <b> Projects: </b> <br /> <!-- <button> P1 </button> <br/> <button> P2 </button> <br/> <button> P3 </button> <br/> --> </div> <div id='extension_desc'> None </div> </div>"
     before = document.getElementsByClassName("page-form")[0]
     before.parentElement.insertBefore(e, before)
 
@@ -148,9 +233,16 @@ function inject() {
     dwnbtn = document.getElementById('extension_movedown')
     export_btn = document.getElementById('extension_export')
     import_btn = document.getElementById('extension_import')
+    undo_btn = document.getElementById('extension_undo')
+    redo_btn = document.getElementById('extension_redo')
+
+    undo_btn.addEventListener("click", undo)
+    redo_btn.addEventListener("click", redo)
 
     export_btn.addEventListener("click", export_exel)
     import_btn.addEventListener("click", import_exel)
+
+    set_undo_redo_button_state()
 
     topbtn.addEventListener("click", function() {
         var ogindex = index_of_option(cur_selection, selected_element)
@@ -188,13 +280,11 @@ function inject() {
         }
     })
 
-    var observer = new MutationObserver(function(mutationsList, observer) {
-        for (var mutation of mutationsList){
-            console.log('The ' + mutation.attributeName + ' attribute was modified.');
-        }
-    });
-    config = {childList: true, subtree: true, attributes: true}
-    observer.observe(selected_element, config);
+    // var observer = new MutationObserver(function(mutationsList, observer) {
+    //     check_state();
+    // });
+    // config = {childList: true, subtree: true, attributes: true}
+    observer.observe(selected_element, observer_config);
     
     // document.getElementsByClassName("dual-action")[0].children[0].disabled = true
     // document.getElementsByClassName("dual-action")[0].children[3].disabled = true
