@@ -188,9 +188,14 @@ function inject() {
         }
     })
 
+    var observer = new MutationObserver(function(mutationsList, observer) {
+        for (var mutation of mutationsList){
+            console.log('The ' + mutation.attributeName + ' attribute was modified.');
+        }
+    });
     
-    document.getElementsByClassName("dual-action")[0].children[0].disabled = true
-    document.getElementsByClassName("dual-action")[0].children[3].disabled = true
+    // document.getElementsByClassName("dual-action")[0].children[0].disabled = true
+    // document.getElementsByClassName("dual-action")[0].children[3].disabled = true
 
     branch_field = document.getElementById('extension_branches')
     stipend_field = document.getElementById('extension_stipend')
