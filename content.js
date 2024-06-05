@@ -23,7 +23,6 @@ function populate_projects(proj_list) {
 async function load_data() {
     const response = await fetch(DATA_URL);
     const data = await response.json();
-    console.log(data);
     populate_projects(data)
 }
 
@@ -82,7 +81,6 @@ function check_state() {
         }
     }
     if (!identical) {
-       console.log("New State!");
         if (cs != states.length) {
             states.splice(cs, states.length - cs)
         }
@@ -93,14 +91,7 @@ function check_state() {
             cs++
         }
         set_undo_redo_button_state()
-        console.log(cs)
     }
-    // for (var mutation of mutationsList){
-    //     if (mutation.target != null) {
-    //         console.log('The ' + mutation.target.innerHTML + ' attribute was modified.');
-    //     }
-    // }
-
 }
 
 function extract_station_id_from_option(option) {
@@ -130,7 +121,6 @@ function import_exel() {
 }
 
 function from_json_list(js, monitor_state = false) {
-    console.log(js)
     observer.disconnect()
     // Reset everything initially.    
     document.getElementsByClassName("dual-action")[0].children[3].click()
@@ -201,8 +191,6 @@ function undo() {
     set_undo_redo_button_state()
     alert("Undo Complete!")
     // todo: clear selection
-    console.log(cs)
-    console.log(states)
 }
 
 function redo() {
@@ -555,6 +543,7 @@ function init() {
             clearInterval(timer);
         
             inject();
+            check_state()
         }
 
     }, 1000)
