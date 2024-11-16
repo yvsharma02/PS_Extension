@@ -22,6 +22,7 @@ function populate_projects(proj_list) {
 
 async function load_data() {
     const response = await fetch(DATA_URL);
+    console.log(response)
     const data = await response.json();
     populate_projects(data)
 }
