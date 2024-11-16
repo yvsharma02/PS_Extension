@@ -12,7 +12,7 @@
       {
         "js": ["content.js", "public/xlsx.full.min.js"],
         "matches": [
-          "https://psms-web.azureedge.net/*"
+          "https://psms.bits-pilani.ac.in/*"
         ]
       }
     ]

@@ -127,12 +127,22 @@ function from_json_list(js, monitor_state = false) {
     for (var i = 0; i < js.length; i++) {
         var id = js[i]["STATION_ID"];
 
-        for (var k = 0; k < available_element.childElementCount; k++) {
-            if (extract_station_id_from_option(available_element.children[k]) == id) {
-                move_from_av_to_selected(available_element.children[k], selected_element.childElementCount)
-                break;
+        if (!id) {
+            for (var k = 0; k < available_element.childElementCount; k++) {
+                if (get_station_name_from_option(available_element.children[k]) === js[i]["STATION_NAME"]) {
+                    move_from_av_to_selected(available_element.children[k], selected_element.childElementCount)
+                    break;
+                }
+            }
+        } else {
+            for (var k = 0; k < available_element.childElementCount; k++) {
+                if (extract_station_id_from_option(available_element.children[k]) == id) {
+                    move_from_av_to_selected(available_element.children[k], selected_element.childElementCount)
+                    break;
+                }
             }
         }
+
         // if(!station_proj_map.has(key)) {
         //     station_proj_map.set(key, []);
         // }
