@@ -1,7 +1,7 @@
 {
     "name": "BITS PS2 Helper",
     "description": "Sort, Explore and Share PS2 Preferences with ease!",
-    "version": "1",
+    "version": "1.1",
     "manifest_version": 3,
     "action": {
       "default_popup": "popup.html",
