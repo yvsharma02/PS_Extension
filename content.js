@@ -401,6 +401,7 @@ function remove_extra_from_name(s) {
         res = res.substring(0, res.indexOf('&amp;')) +  '&' + res.substring(res.indexOf('&amp;') + 5)
     }
     console.log(s)
+    console.log(res)
     return res
 }
 
